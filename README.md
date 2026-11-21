@@ -1,10 +1,10 @@
-# Cache Pulse
+# Cache Pulse Antigravity
 
 **English** | [简体中文](README.zh-CN.md)
 
 **Real-time prompt cache hit rate, task throughput, per-model usage breakdown, and 5h / 1d / 7d multi-session telemetry plugin for Antigravity.**
 
-Cache Pulse gives you an interactive dashboard inside Antigravity (MCP Apps sidecar/inline UI + Lifecycle Hooks) so you can inspect how well prompt caching works on every turn, compare models side-by-side, and monitor total token consumption across time windows — **100% locally with zero network telemetry**.
+Cache Pulse Antigravity provides an interactive dashboard (MCP Apps sidecar/inline UI + Lifecycle Hooks) so you can inspect how well prompt caching works on every turn, compare models side-by-side, and monitor total token consumption across time windows — **100% locally with zero network telemetry**.
 
 ---
 
@@ -66,7 +66,7 @@ Then reload MCP plugins in Antigravity Desktop (or restart Antigravity) to activ
 
 ## Usage
 
-Once installed, open the Cache Pulse UI by asking Antigravity any of the built-in prompts:
+Once installed, open the Cache Pulse Antigravity UI by asking Antigravity any of the built-in prompts:
 
 - *"Open the Cache Pulse monitor for the current session"*
 - *"Show my Cache Pulse 24h usage summary and per-model breakdown"*
