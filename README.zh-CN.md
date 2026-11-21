@@ -8,6 +8,25 @@ Cache Pulse Antigravity 基于原生 MCP Apps 面板与 Lifecycle Hooks 在本�
 
 ---
 
+## 界面预览
+
+**多周期统计总览（5h / 24h / 7d 汇总、分模型占比、时间轴趋势与效率散点图）**
+
+![多周期统计总览](docs/screenshots/overview-zh-light.png)
+
+**单会话实时监控（逐轮缓存命中曲线与 Hook 毫秒计时）**
+
+![单会话实时监控](docs/screenshots/session-zh-light.png)
+
+<details>
+<summary>查看英文界面预览</summary>
+
+![Multi-Session Overview (24h)](docs/screenshots/overview-en-light.png)
+
+</details>
+
+---
+
 ## 主要功能
 
 - **中英双语（`EN / 中`）**

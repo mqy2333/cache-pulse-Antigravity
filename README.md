@@ -8,6 +8,25 @@ Cache Pulse Antigravity provides an interactive dashboard (MCP Apps sidecar/inli
 
 ---
 
+## Screenshots
+
+**Multi-Session Overview (`5h / 24h / 7d`, Model Breakdown & Efficiency Scatter)**
+
+![Multi-Session Overview (24h)](docs/screenshots/overview-en-light.png)
+
+**Single-Session Live Monitor (Per-Turn Cache Curve & Hook Timing)**
+
+![Single-Session Live Monitor](docs/screenshots/session-en-light.png)
+
+<details>
+<summary>Simplified Chinese UI preview</summary>
+
+![Multi-Session Overview (24h, Simplified Chinese)](docs/screenshots/overview-zh-light.png)
+
+</details>
+
+---
+
 ## Features
 
 - **Bilingual UI (`EN / 中`)**: Automatically follows your Antigravity / OS locale (English by default, Simplified Chinese for `zh*` locales) with an instant `EN / 中` toggle button in the top bar.
