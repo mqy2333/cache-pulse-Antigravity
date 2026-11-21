@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cache Pulse</title>
+    <style>/* __INLINE_CSS__ */</style>
+  </head>
+  <body>
+    <main id="app-shell" class="app-shell" data-compact="false">
+      <!-- Hero Status Capsule -->
+      <section class="hero-card" aria-label="Status bar">
+        <div id="hero-session-content" class="hero-inner">
+          <div class="hero-project">
+            <span id="live-dot" class="live-dot"></span>
+            <span class="hero-label" data-i18n="heroProject">Project</span>
+            <span id="hero-project-name" class="hero-project-name" data-i18n="heroLoading">Loading...</span>
+            <span id="hero-session-sep" class="hero-sep hidden">/</span>
+            <span id="hero-session-title" class="hero-session-title hidden"></span>
+            <span id="hero-model-filter-pill" class="pill pill-neutral hero-model-badge hidden"></span>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="metric-group" id="hero-speed-wrap">
+              <span class="metric-label" data-i18n="heroSpeed">Speed</span>
+              <span id="hero-speed" class="metric-val">--</span>
+              <span class="metric-unit">tok/s</span>
+            </div>
+
+            <div class="metric-group">
+              <span class="metric-label" data-i18n="heroCache">Cache</span>
+              <span class="metric-sublabel" data-i18n="heroRecent">Recent</span>
+              <span id="hero-recent-cache" class="metric-val">--</span>
+              <span class="metric-sublabel" data-i18n="heroSession">Session</span>
+              <span id="hero-session-cache" class="metric-val">--</span>
+            </div>
+
+            <div class="metric-group">
+              <span class="metric-label" data-i18n="heroCum">Input</span>
+              <span id="hero-cum-in" class="metric-val">0</span>
+              <span class="metric-sublabel" data-i18n="heroOut">Out</span>
+              <span id="hero-cum-out" class="metric-val">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="hero-summary-content" class="hero-inner hidden">
+          <div class="hero-project">
+            <span id="sum-live-dot" class="live-dot"></span>
+            <span class="hero-label" data-i18n="heroPeriod">Window</span>
+            <span id="sum-hero-window" class="hero-project-name" data-i18n="win1d">Last 24h</span>
+            <span id="sum-hero-sessions-pill" class="pill pill-neutral">0</span>
+            <span id="sum-hero-model-pill" class="pill pill-neutral hero-model-badge hidden"></span>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="metric-group" id="sum-hero-speed-wrap">
+              <span class="metric-label" data-i18n="heroSpeed">Speed</span>
+              <span id="sum-hero-speed" class="metric-val">--</span>
+              <span class="metric-unit">tok/s</span>
+            </div>
+
+            <div class="metric-group">
+              <span class="metric-label" data-i18n="heroOverallHit">Hit Rate</span>
+              <span id="sum-hero-cache" class="metric-val">--</span>
+            </div>
+
+            <div class="metric-group">
+              <span class="metric-label" data-i18n="heroTotal">Total</span>
+              <span id="sum-hero-total" class="metric-val">0</span>
+              <span class="metric-sublabel" data-i18n="heroIn">In</span>
+              <span id="sum-hero-in" class="metric-val">0</span>
+              <span class="metric-sublabel" data-i18n="heroOut">Out</span>
+              <span id="sum-hero-out" class="metric-val">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Subtle Controls Bar -->
+      <section class="toolbar" aria-label="View controls">
+        <div class="toolbar-left">
+          <div class="segmented" role="group" aria-label="Monitor mode">
+            <button id="btn-view-session" type="button" class="seg-btn active" data-i18n="modeSession">Session</button>
+            <button id="btn-view-summary" type="button" class="seg-btn" data-i18n="modeSummary">Overview</button>
+          </div>
+
+          <div id="session-controls" class="select-wrap">
+            <select id="session-select" class="session-select" aria-label="Select session">
+              <option value="__auto__" data-i18n="autoFollowEmpty">Auto-follow active session</option>
+            </select>
+            <svg class="select-chevron" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path d="M4.5 6.25L8 9.75L11.5 6.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div id="window-controls" class="segmented hidden" role="group" aria-label="Time window">
+            <button id="btn-win-5h" type="button" class="seg-btn" data-window="5h">5h</button>
+            <button id="btn-win-1d" type="button" class="seg-btn active" data-window="1d">1d</button>
+            <button id="btn-win-7d" type="button" class="seg-btn" data-window="7d">7d</button>
+          </div>
+
+          <span id="status-chip" class="status-chip" data-i18n="statusSyncing">Syncing</span>
+        </div>
+
+        <div class="toolbar-right">
+          <div class="segmented" role="group" aria-label="Display density">
+            <button id="btn-mode-detail" type="button" class="seg-btn active" data-i18n="modeDetail">Detail</button>
+            <button id="btn-mode-compact" type="button" class="seg-btn" data-i18n="modeCompact">Compact</button>
+          </div>
+          <button id="btn-lang" type="button" class="lang-btn" title="Switch language">中</button>
+          <button id="btn-refresh" type="button" class="icon-btn" data-i18n-title="refreshTitle" title="Refresh now">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path d="M13.2 8a5.2 5.2 0 1 1-1.38-3.54M13.5 2.6v2.7h-2.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Empty / Waiting State -->
+      <section id="empty-state" class="empty-card hidden">
+        <div class="empty-title" data-i18n="emptyTitle">Waiting for First Model Response</div>
+        <div id="empty-desc" class="empty-desc" data-i18n="emptyDesc">
+          No model calls recorded in this session yet. Send a message to see live cache hit rate and token metrics.
+        </div>
+      </section>
+
+      <!-- Expandable Detailed Analytics -->
+      <div id="details-panel" class="details-panel">
+        <!-- Per-Session Model Filter Bar (shown when session has multiple models or active filter) -->
+        <section id="session-model-bar" class="model-filter-bar hidden" aria-label="Session model filter">
+          <div id="session-model-pills" class="model-pills"></div>
+          <div class="segmented" role="group" aria-label="Model grouping">
+            <button id="btn-sess-grp-family" type="button" class="seg-btn active" data-i18n="groupFamily" data-i18n-title="groupFamilyTitle">Merged</button>
+            <button id="btn-sess-grp-exact" type="button" class="seg-btn" data-i18n="groupExact" data-i18n-title="groupExactTitle">Exact</button>
+          </div>
+        </section>
+
+        <!-- 3 KPI Cards -->
+        <section class="kpi-grid" aria-label="Core token metrics">
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span class="kpi-title" data-i18n="kpiCachedTitle">Cache Hit</span>
+              <span id="kpi-hit-badge" class="pill pill-neutral">--</span>
+            </div>
+            <div id="kpi-cached-val" class="kpi-value">0</div>
+            <div id="kpi-cached-sub" class="kpi-sub">0 tokens</div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span class="kpi-title" data-i18n="kpiUncachedTitle">Uncached Input</span>
+              <span id="kpi-miss-badge" class="pill pill-neutral">--</span>
+            </div>
+            <div id="kpi-uncached-val" class="kpi-value">0</div>
+            <div id="kpi-uncached-sub" class="kpi-sub">0 tokens</div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span class="kpi-title" data-i18n="kpiOutputTitle">Output Tokens</span>
+              <span id="kpi-steps-badge" class="pill pill-neutral">0</span>
+            </div>
+            <div id="kpi-output-val" class="kpi-value">0</div>
+            <div id="kpi-model-sub" class="kpi-sub truncate">--</div>
+          </article>
+        </section>
+
+        <!-- Token Composition Bar -->
+        <section class="panel-card" aria-label="Session token composition">
+          <div class="panel-head">
+            <span class="panel-title" data-i18n="compTitle">Session Token Composition</span>
+            <span id="comp-total" class="panel-meta">0</span>
+          </div>
+          <div class="comp-bar" role="img" aria-label="Token composition bar">
+            <div id="seg-cached" class="comp-seg seg-cached" style="width: 0%"></div>
+            <div id="seg-uncached" class="comp-seg seg-uncached" style="width: 0%"></div>
+            <div id="seg-output" class="comp-seg seg-output" style="width: 0%"></div>
+          </div>
+          <div class="comp-legend">
+            <div class="legend-item">
+              <span class="legend-dot dot-cached"></span>
+              <span class="legend-name" data-i18n="legCached">Cache Hit</span>
+              <span id="leg-cached" class="legend-val">0</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-uncached"></span>
+              <span class="legend-name" data-i18n="legUncached">New Input</span>
+              <span id="leg-uncached" class="legend-val">0</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-output"></span>
+              <span class="legend-name" data-i18n="legOutput">Output</span>
+              <span id="leg-output" class="legend-val">0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Per-Session Multi-Model Breakdown -->
+        <section id="session-models-card" class="panel-card hidden" aria-label="Session model breakdown">
+          <div class="panel-head">
+            <span class="panel-title" data-i18n="sessModelsTitle">Models in This Session</span>
+            <span id="session-models-meta" class="panel-meta"></span>
+          </div>
+          <div id="session-models-list" class="breakdown-list"></div>
+        </section>
+
+        <!-- Per-Turn SVG Trend Chart -->
+        <section class="panel-card chart-card" aria-label="Per-turn cache hit rate trend">
+          <div class="panel-head">
+            <span class="panel-title" data-i18n="trendTitle">Per-Turn Cache Hit Rate & Input Size</span>
+            <div class="chart-legend">
+              <span class="chart-key"><i class="key-line"></i><span data-i18n="legendHitRate">Hit Rate %</span></span>
+              <span class="chart-key"><i class="key-bar"></i><span data-i18n="legendStepInput">Turn Input</span></span>
+            </div>
+          </div>
+          <div id="chart-wrap" class="chart-wrap">
+            <svg id="trend-svg" class="trend-svg" aria-hidden="true"></svg>
+            <div id="chart-tooltip" class="chart-tooltip hidden"></div>
+          </div>
+        </section>
+
+        <!-- Recent Calls Table -->
+        <section class="panel-card" aria-label="Recent model calls">
+          <div class="panel-head">
+            <span class="panel-title" data-i18n="recentTableTitle">Recent Model Calls</span>
+            <span id="table-meta" class="panel-meta">0</span>
+          </div>
+          <div class="table-wrap">
+            <table class="turns-table">
+              <thead>
+                <tr>
+                  <th data-i18n="colStep">Turn</th>
+                  <th data-i18n="colModel">Model</th>
+                  <th data-i18n="colHit">Cache Hit</th>
+                  <th class="num" data-i18n="colCachedNew">Cached / New</th>
+                  <th class="num" data-i18n="colOutput">Output</th>
+                  <th class="num" data-i18n="colSpeed">Speed</th>
+                </tr>
+              </thead>
+              <tbody id="turns-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="foot-note">
+          <span id="foot-note-text"></span>
+        </footer>
+      </div>
+
+      <!-- Summary Empty State -->
+      <section id="summary-empty-state" class="empty-card hidden">
+        <div id="summary-empty-title" class="empty-title" data-i18n="sumEmptyTitle">No Sessions in This Window</div>
+        <div id="summary-empty-desc" class="empty-desc"></div>
+        <div class="empty-actions">
+          <button id="btn-empty-clear-model" type="button" class="empty-action-btn hidden" data-i18n="btnShowAllModels">Show All Models</button>
+          <button id="btn-empty-try-7d" type="button" class="empty-action-btn" data-i18n="btnView7d">View Last 7 Days</button>
+        </div>
+      </section>
+
+      <!-- Multi-Session Window Analytics Panel -->
+      <div id="summary-panel" class="details-panel hidden">
+        <!-- Multi-Session Model Filter Bar -->
+        <section id="sum-model-bar" class="model-filter-bar" aria-label="Model filter">
+          <div id="sum-model-pills" class="model-pills"></div>
+          <div class="segmented" role="group" aria-label="Model grouping">
+            <button id="btn-sum-grp-family" type="button" class="seg-btn active" data-i18n="groupFamily" data-i18n-title="groupFamilyTitle">Merged</button>
+            <button id="btn-sum-grp-exact" type="button" class="seg-btn" data-i18n="groupExact" data-i18n-title="groupExactTitle">Exact</button>
+          </div>
+        </section>
+
+        <!-- 4 Summary KPI Cards -->
+        <section class="summary-kpi-grid" aria-label="Window summary KPIs">
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span class="kpi-title" data-i18n="sumKpiTotalTitle">Total Tokens</span>
+              <span id="sum-kpi-total-badge" class="pill pill-neutral">0</span>
+            </div>
+            <div id="sum-kpi-total-val" class="kpi-value">0</div>
+            <div id="sum-kpi-total-sub" class="kpi-sub">0</div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span class="kpi-title" data-i18n="sumKpiHitTitle">Overall Cache Hit Rate</span>
+              <span id="sum-kpi-hit-badge" class="pill pill-neutral">--</span>
+            </div>
+            <div id="sum-kpi-hit-val" class="kpi-value">--</div>
+            <div id="sum-kpi-hit-sub" class="kpi-sub">0</div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span class="kpi-title" data-i18n="sumKpiSpeedTitle">Avg Task Speed</span>
+              <span id="sum-kpi-speed-badge" class="pill pill-neutral">--</span>
+            </div>
+            <div id="sum-kpi-speed-val" class="kpi-value">--</div>
+            <div id="sum-kpi-speed-sub" class="kpi-sub">0</div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-head">
+              <span id="sum-kpi-avg-title" class="kpi-title" data-i18n="sumKpiAvgTitle">Avg per Session</span>
+              <span id="sum-kpi-avg-badge" class="pill pill-neutral">0</span>
+            </div>
+            <div id="sum-kpi-avg-val" class="kpi-value">0</div>
+            <div id="sum-kpi-avg-sub" class="kpi-sub">0</div>
+          </article>
+        </section>
+
+        <!-- Row 1: Donut + 5h/1d/7d Comparison -->
+        <section class="chart-grid-2" aria-label="Usage breakdown and window comparison">
+          <article class="panel-card">
+            <div class="panel-head">
+              <span id="sum-donut-title" class="panel-title" data-i18n="donutModelTitle">Usage by Model</span>
+              <div class="panel-head-right">
+                <span id="sum-donut-meta" class="panel-meta">0</span>
+                <div id="sum-donut-toggle" class="segmented" role="group" aria-label="Donut mode">
+                  <button id="btn-donut-model" type="button" class="seg-btn active" data-i18n="btnDonutModel">By Model</button>
+                  <button id="btn-donut-token" type="button" class="seg-btn" data-i18n="btnDonutToken">By Token</button>
+                </div>
+              </div>
+            </div>
+            <div class="donut-layout">
+              <div class="donut-wrap">
+                <svg id="sum-donut-svg" class="donut-svg" viewBox="0 0 140 140" aria-hidden="true"></svg>
+              </div>
+              <div id="sum-donut-legend" class="donut-legend"></div>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="panel-head">
+              <span class="panel-title" data-i18n="compareTitle">Window Comparison</span>
+              <span id="sum-compare-meta" class="panel-meta" data-i18n="compareMeta">Click to switch</span>
+            </div>
+            <div id="sum-compare-list" class="compare-list"></div>
+          </article>
+        </section>
+
+        <!-- Row 2: Time-Bucket Timeline Chart -->
+        <section class="panel-card chart-card" aria-label="Timeline usage and cache hit rate">
+          <div class="panel-head">
+            <span id="sum-timeline-title" class="panel-title">Timeline Usage & Cache Hit Rate</span>
+            <div class="panel-head-right">
+              <div id="sum-timeline-legend" class="chart-legend"></div>
+              <div id="sum-timeline-toggle" class="segmented" role="group" aria-label="Timeline stack mode">
+                <button id="btn-tl-model" type="button" class="seg-btn active" data-i18n="btnTlModel">By Model</button>
+                <button id="btn-tl-token" type="button" class="seg-btn" data-i18n="btnTlToken">By Token</button>
+              </div>
+            </div>
+          </div>
+          <div id="sum-timeline-wrap" class="chart-wrap">
+            <svg id="sum-timeline-svg" class="trend-svg" aria-hidden="true"></svg>
+            <div id="sum-timeline-tooltip" class="chart-tooltip hidden"></div>
+          </div>
+        </section>
+
+        <!-- Row 3: Model/Project Breakdown + Efficiency Bubble Scatter -->
+        <section class="chart-grid-2" aria-label="Breakdown and session efficiency">
+          <article class="panel-card">
+            <div class="panel-head">
+              <span id="sum-breakdown-title" class="panel-title" data-i18n="breakdownModelsTitle">Model Breakdown</span>
+              <div class="segmented" role="group" aria-label="Breakdown dimension">
+                <button id="btn-bd-model" type="button" class="seg-btn active" data-i18n="btnBdModel">Models</button>
+                <button id="btn-bd-project" type="button" class="seg-btn" data-i18n="btnBdProject">Projects</button>
+              </div>
+            </div>
+            <div id="sum-breakdown-list" class="breakdown-list"></div>
+          </article>
+
+          <article class="panel-card chart-card">
+            <div class="panel-head">
+              <span class="panel-title" data-i18n="scatterTitle">Session Efficiency</span>
+              <span class="panel-meta" data-i18n="scatterMeta">Hit Rate × Speed · click to open</span>
+            </div>
+            <div id="sum-scatter-wrap" class="chart-wrap scatter-wrap">
+              <svg id="sum-scatter-svg" class="scatter-svg" aria-hidden="true"></svg>
+              <div id="sum-scatter-tooltip" class="chart-tooltip hidden"></div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Row 4: Matched Sessions Table -->
+        <section class="panel-card" aria-label="Sessions in window">
+          <div class="panel-head">
+            <span class="panel-title" data-i18n="sumTableTitle">Sessions in Window</span>
+            <div class="table-head-actions">
+              <span id="sum-table-meta" class="panel-meta">0</span>
+              <div class="select-wrap">
+                <select id="sum-session-sort" class="sort-select" aria-label="Sort sessions">
+                  <option value="recent" data-i18n="sortRecent">Most Recent</option>
+                  <option value="tokens" data-i18n="sortTokens">Total Tokens</option>
+                  <option value="hitRate" data-i18n="sortHitRate">Cache Hit Rate</option>
+                  <option value="speed" data-i18n="sortSpeed">Avg Speed</option>
+                </select>
+                <svg class="select-chevron" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                  <path d="M4.5 6.25L8 9.75L11.5 6.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="turns-table sessions-table">
+              <thead>
+                <tr>
+                  <th data-i18n="colSession">Project / Task</th>
+                  <th data-i18n="colModel">Model</th>
+                  <th class="num" data-i18n="colTurns">Turns</th>
+                  <th data-i18n="colHitRate">Hit Rate</th>
+                  <th class="num" data-i18n="colTokensBreakdown">Total (Hit/New/Out)</th>
+                  <th class="num" data-i18n="colSpeed">Speed</th>
+                  <th class="num" data-i18n="colLastActive">Active</th>
+                </tr>
+              </thead>
+              <tbody id="sum-sessions-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="foot-note">
+          <span id="sum-foot-note-text"></span>
+        </footer>
+      </div>
+    </main>
+    <script>/* __INLINE_JS__ */</script>
+  </body>
+</html>

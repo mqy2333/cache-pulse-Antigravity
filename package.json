@@ -1,0 +1,39 @@
+{
+  "name": "cache-pulse",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "mqy2333",
+  "homepage": "https://github.com/mqy2333/cache-pulse-Antigravity",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mqy2333/cache-pulse-Antigravity.git"
+  },
+  "keywords": [
+    "antigravity",
+    "plugin",
+    "mcp",
+    "mcp-app",
+    "prompt-cache",
+    "telemetry",
+    "token-usage"
+  ],
+  "description": "Bilingual (EN/ZH) real-time prompt cache hit rate, token throughput, model breakdown, and multi-session telemetry plugin for Antigravity.",
+  "scripts": {
+    "build": "node build.mjs",
+    "deploy": "node build.mjs --deploy",
+    "test": "node --test test/parser.test.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.0"
+  }
+}

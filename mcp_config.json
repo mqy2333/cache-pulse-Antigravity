@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "telemetry": {
+      "command": "node",
+      "args": [
+        "${PLUGIN_ROOT}/dist/server.cjs",
+        "--data-dir",
+        "${PLUGIN_DATA}"
+      ]
+    }
+  }
+}

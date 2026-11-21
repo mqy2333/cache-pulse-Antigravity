@@ -1,0 +1,21 @@
+{
+  "name": "cache-pulse",
+  "displayName": "Cache Pulse",
+  "version": "1.2.0",
+  "description": "Real-time prompt cache hit rate, task speed, per-model usage breakdown, and 5h/1d/7d multi-session telemetry for Antigravity (EN/ZH).",
+  "author": {
+    "name": "mqy2333",
+    "url": "https://github.com/mqy2333"
+  },
+  "homepage": "https://github.com/mqy2333/cache-pulse-Antigravity",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mqy2333/cache-pulse-Antigravity.git"
+  },
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Open the Cache Pulse monitor for the current session",
+    "Show my Cache Pulse 24h usage summary and per-model breakdown",
+    "Check my 7-day prompt cache hit rate and task speed"
+  ]
+}

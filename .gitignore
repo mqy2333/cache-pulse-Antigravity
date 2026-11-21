@@ -1,0 +1,10 @@
+# Dependencies (runtime server.cjs and hook-capture.cjs are pre-bundled in dist/ and scripts/)
+node_modules/
+
+# Local build staging output (not needed in Git since dist/ and scripts/ are tracked at root)
+dist-plugin/
+
+# Temporary test and editor files
+*.tmp.*
+.DS_Store
+Thumbs.db
